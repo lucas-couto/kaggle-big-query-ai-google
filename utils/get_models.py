@@ -3,7 +3,6 @@ from models import (
     Resnet152,
     Convnext,
     Densenet,
-    Efficientnet,
     Inception,
     Nasnet,
     Resnet50, 
@@ -12,8 +11,12 @@ from models import (
 
 def get_models():
     return [
-    Cnn,Resnet152,Convnext,  
-    Densenet, Efficientnet,
-    Inception, Nasnet,
-    Resnet50, XceptionModel
+    Cnn,
+    Resnet152,
+    Convnext,  
+    Densenet, 
+    Inception, 
+    Nasnet,
+    Resnet50, 
+    XceptionModel
 ]

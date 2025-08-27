@@ -1,6 +1,10 @@
 model:
   input_shape: [128, 128, 3]
-  num_classes: 1
+  num_classes: 8
+
+data:
+  train_size: 0.9
+  class_mode: "categorical"
 
 patient:
   early_stop: 8
@@ -9,12 +13,12 @@ patient:
 training:
   epochs: 1
   batch_size: 2
-  valid_size: 0.01
-  train_size: 0.1
   learning_rate: 0.0001
+  activation_func: "softmax"
+  loss_func: "categorical_crossentropy"
 
 paths:
   train_dir: "datasets/train"
-  valid_dir: "datasets/valid"
+  valid_dir: "datasets/test"
   images_dir: "images"
   datasets_dir: "datasets/"

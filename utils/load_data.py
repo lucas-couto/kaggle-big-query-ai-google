@@ -4,6 +4,7 @@ def load_data(config):
     input_shape = tuple(config['model']['input_shape'])
     train_dir = config['paths']['train_dir']
     valid_dir = config['paths']['valid_dir']
+    class_mode = config['data']['class_mode']
     batch_size = config['training']['batch_size']
 
     train_datagen = ImageDataGenerator(
@@ -14,7 +15,7 @@ def load_data(config):
         shear_range=0.2,
         zoom_range=0.2,
         horizontal_flip=True,
-        fill_mode='nearest'
+        fill_mode='nearest',
     )
 
     valid_datagen = ImageDataGenerator(rescale=1. / 255)
@@ -24,16 +25,18 @@ def load_data(config):
         train_dir,
         target_size=(input_shape[0], input_shape[1]),
         batch_size=batch_size,
-        class_mode='binary',
-        shuffle=True
+        class_mode=class_mode,
+        shuffle=True,
+        color_mode='grayscale'
     )
 
     validation_data = valid_datagen.flow_from_directory(
         valid_dir,
         target_size=(input_shape[0], input_shape[1]),
         batch_size=batch_size,
-        class_mode='binary',
-        shuffle=False  # Mantendo a ordem para avaliação
+        class_mode=class_mode,
+        shuffle=False,
+        color_mode='grayscale',
     )
 
     # Obter rótulos das classes para treino e validação

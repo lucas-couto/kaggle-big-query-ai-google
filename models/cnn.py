@@ -38,5 +38,5 @@ class Cnn(BaseModel):
         model.add(layers.Dense(256,  activation='relu')); model.add(layers.BatchNormalization()); model.add(layers.Dropout(0.3))
 
         # Saída binária
-        model.add(layers.Dense(self.num_classes, activation='sigmoid'))
+        model.add(layers.Dense(self.num_classes, activation=self.activation_func))
         return model

@@ -1,5 +1,6 @@
 # base_model.py
 import os
+import numpy as np
 import tensorflow as tf
 from keras.optimizers import Adam
 from abc import ABC, abstractmethod
@@ -15,11 +16,13 @@ class BaseModel(ABC):
     def __init__(self, config: Dict[str, Any], data: Tuple[Any, Any, Any, Any], checkpoint_dir="checkpoints/model"):
         # Config
         self.epochs = config['training']['epochs']
+        self.loss_func = config['training']['loss_func']
         self.num_classes = config['model']['num_classes']
         self.batch_size = config['training']['batch_size']
         self.input_shape = tuple(config['model']['input_shape'])
         self.learning_rate = config['training']['learning_rate']
         self.patience_early_stop = config['patient']['early_stop']
+        self.activation_func = config['training']['activation_func']
         self.patience_reduce_lr_plateau = config['patient']['reduce_lr_plateau']
 
         (self.train_data,
@@ -36,8 +39,8 @@ class BaseModel(ABC):
 
         self.model = self.build_model()
         self.model.compile(
+            loss=self.loss_func,
             optimizer=Adam(learning_rate=self.learning_rate),
-            loss='binary_crossentropy',
             metrics=['accuracy', Precision(), Recall(), AUC()]
         )
 
@@ -88,39 +91,36 @@ class BaseModel(ABC):
             verbose=1
         )
 
+
     def evaluate(self):
         # garante pesos ótimos
         self.model.load_weights(self.best_weights_path)
 
         # probabilidades no conjunto de validação
-        proba = self.model.predict(self.validation_data, verbose=0).ravel()
+        proba = self.model.predict(self.validation_data, verbose=0)
 
-        # limiar ótimo (binário)
-        best_threshold = find_best_threshold(self.model, self.validation_data, self.validation_labels)
+        # classes previstas: índice da maior probabilidade
+        preds = np.argmax(proba, axis=1)
 
-        # rótulos com limiar ótimo
-        preds = (proba > best_threshold).astype("int32")
-
-        # métricas Keras
+        # métricas keras (loss e accuracy)
         eval_vals = self.model.evaluate(self.validation_data, verbose=0)
         loss = float(eval_vals[0])
         accuracy = float(eval_vals[1])
 
         # métricas sklearn
-        precision = precision_score(self.validation_labels, preds, average='binary', zero_division=0)
-        recall = recall_score(self.validation_labels, preds, average='binary', zero_division=0)
-        auc = roc_auc_score(self.validation_labels, proba)
+        precision = precision_score(self.validation_labels, preds, average='macro', zero_division=0)
+        recall = recall_score(self.validation_labels, preds, average='macro', zero_division=0)
 
-        print(classification_report(self.validation_labels, preds, target_names=['fake', 'real']))
+        print("\nClassification Report:\n")
+        print(classification_report(self.validation_labels, preds))
 
+        # salvar resultados
         data = {
             'Model': self.__class__.__name__.lower(),
             'Loss': loss,
-            'Accuracy': float(accuracy),
-            'Precision': float(precision),
-            'Recall': float(recall),
-            'AUC': float(auc),
-            'Threshold': float(best_threshold),
+            'Accuracy': accuracy,
+            'Precision': precision,
+            'Recall': recall,
             'Checkpoint': self.best_model_path
         }
         save_results(self.__class__.__name__.lower(), data)

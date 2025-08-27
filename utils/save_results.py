@@ -8,8 +8,6 @@ def save_results(model_name, results):
       'Accuracy': results.get('Accuracy', None),     # Accuracy
       'Precision': results.get('Precision', None),    # Precision
       'Recall': results.get('Recall', None),       # Recall
-      'AUC': results.get('AUC', None),
-      'Threshold': results.get('Threshold', None),
   }
 
   df = pd.DataFrame([data])
