@@ -1,4 +1,4 @@
-name: big-query-ai-google
+name: kaggle-big-query-ai-google
 channels:
   - defaults
   - https://repo.anaconda.com/pkgs/main
