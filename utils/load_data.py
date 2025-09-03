@@ -27,7 +27,7 @@ def load_data(config):
         batch_size=batch_size,
         class_mode=class_mode,
         shuffle=True,
-        color_mode='grayscale'
+        color_mode='rgb'
     )
 
     validation_data = valid_datagen.flow_from_directory(
@@ -36,7 +36,7 @@ def load_data(config):
         batch_size=batch_size,
         class_mode=class_mode,
         shuffle=False,
-        color_mode='grayscale',
+        color_mode='rgb',
     )
 
     # Obter rótulos das classes para treino e validação

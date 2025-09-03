@@ -13,9 +13,9 @@ def preprocess_images(config):
     train_size = float(config['data'].get('train_size', 0.8))
     random_state = int(config['training'].get('random_state', 42))
 
-    # Limpa pasta de saída
-    if output_dir.exists():
-        shutil.rmtree(output_dir)
+    os.makedirs(output_dir, exist_ok=True)
+
+    shutil.rmtree(output_dir)
     (output_dir / 'train').mkdir(parents=True, exist_ok=True)
     (output_dir / 'test').mkdir(parents=True, exist_ok=True)
 

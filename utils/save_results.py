@@ -14,7 +14,10 @@ def save_results(model_name, results):
   df = df.fillna("null")
 
   # Nome do arquivo CSV
-  csv_file = 'results/evaluation.csv'
+  results_dir = 'results'
+  csv_file = os.path.join(results_dir, 'evaluation.csv')
+  
+  os.makedirs(results_dir, exist_ok=True)
 
   if os.path.exists(csv_file):
       return df.to_csv(csv_file, mode='a', header=False, index=False)
